@@ -47,7 +47,7 @@ jobs:
           echo "Releasing $OLD_VERSION as $NEW_VERSION"
           mvn -s .circleci/settings.xml versions:use-releases
           mvn -s .circleci/settings.xml versions:set -DnewVersion="$NEW_VERSION"
-          mvn -s .circleci/settings.xml -DaltDeploymentRepository=release::default::${CI_ARTIFACTORY_URL}/libs-release
+          mvn -s .circleci/settings.xml deploy -DaltDeploymentRepository=release::default::${CI_ARTIFACTORY_URL}/libs-release
           git config user.name "RustamGimadiev"
           git config user.email "rgimadeiv@provectus.com"
           git add pom.xml
