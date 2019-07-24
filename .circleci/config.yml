@@ -36,7 +36,7 @@ jobs:
             - v1-dependencies-
       - run:
           name: Release
-          command:
+          command: |
             yum install -y git
             OLD_VERSION=$(mvn -s .circleci/settings.xml -q \
               -Dexec.executable="echo" -Dexec.args='${project.version}' \
