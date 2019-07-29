@@ -23,7 +23,7 @@ object JmxMetrics {
     @JvmStatic fun main(args: Array<String>) {
 
         val module = module {
-            single { ConfigFactory.defaultApplication() }
+            single { ConfigFactory.defaultApplication().resolve() }
             single { ConfigBuilder(get()) }
             single { get<ConfigBuilder>().serverProperties }
             single { get<ConfigBuilder>().poolConfig }

@@ -30,5 +30,5 @@ target/
 *.iml
 
 .classpath
-.project
+.project`
 .settings
