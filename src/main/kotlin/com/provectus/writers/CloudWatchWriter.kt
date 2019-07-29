@@ -11,6 +11,7 @@ import software.amazon.awssdk.services.cloudwatch.CloudWatchClient
 import software.amazon.awssdk.services.cloudwatch.model.Dimension
 import software.amazon.awssdk.services.cloudwatch.model.MetricDatum
 import software.amazon.awssdk.services.cloudwatch.model.PutMetricDataRequest
+import java.lang.Double.*
 
 
 class CloudWatchWriter(
@@ -47,6 +48,9 @@ class CloudWatchWriter(
         val list = results.mapNotNull {
             when (val d = resultSerializer.serialize(query, it)) {
                 null -> null
+                NaN -> null
+                NEGATIVE_INFINITY -> null
+                POSITIVE_INFINITY -> null
                 else -> buildMetric(query, it, d, dimensions)
             }
         }
