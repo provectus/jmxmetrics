@@ -46,22 +46,25 @@ class CloudWatchWriter(
         val namespace = buildNamespace(query)
 
         val list = results.mapNotNull {
-            when (val d = resultSerializer.serialize(query, it)) {
-                null -> null
-                NaN -> null
-                NEGATIVE_INFINITY -> null
-                POSITIVE_INFINITY -> null
+            val d = resultSerializer.serialize(query, it)
+
+            when {
+                d == null -> null
+                d.isNaN() -> null
+                d.isInfinite() -> null
                 else -> buildMetric(query, it, d, dimensions)
             }
         }
 
         if (list.isNotEmpty()) {
-            val request = PutMetricDataRequest.builder()
-                .namespace(namespace)
-                .metricData(list)
-                .build()
+            list.chunked(20).onEach {
+                val request = PutMetricDataRequest.builder()
+                    .namespace(namespace)
+                    .metricData(it)
+                    .build()
 
-            cloudWatchClient.putMetricData(request)
+                cloudWatchClient.putMetricData(request)
+            }
         }
     }
 
