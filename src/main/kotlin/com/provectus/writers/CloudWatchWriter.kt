@@ -70,7 +70,12 @@ class CloudWatchWriter(
 
     private fun buildMetric(query:Query, result:Result,value:Double, dimensions:List<Dimension>):MetricDatum {
         val mb = MetricDatum.builder()
-        val datum:MetricDatum.Builder = mb.metricName(result.attributeName)
+        val metricName = if (result.valuePath.isEmpty()) {
+            result.attributeName
+        } else {
+            result.attributeName + "_" + result.valuePath.joinToString(".")
+        }
+        val datum:MetricDatum.Builder = mb.metricName(metricName)
             .value(value)
             .dimensions(dimensions + typeNamesToDimension(filterTypeNames(result.typeNameMap)))
         if (query.settings.hasPath(UNIT_CONFIG_FIELD) &&
