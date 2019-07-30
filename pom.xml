@@ -154,7 +154,80 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>1.4.0</version>
+                <executions>
+                    <execution>
+                        <id>build-image</id>
+                        <phase>package</phase>
+                        <goals><goal>buildTar</goal></goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <containerizingMode>packaged</containerizingMode>
+                    <from>
+                        <image>gcr.io/distroless/java:11</image>
+                    </from>
+                    <to>
+                        <image>docker.io/provectuslabs/jmxmetrics</image>
+                        <auth>
+                            <username>${env.REGISTRY_USERNAME}</username>
+                            <password>${env.REGISTRY_PASSWORD}</password>
+                        </auth>
+                        <tags>
+                            <tag>${project.version}</tag>
+                            <tag>latest</tag>
+                        </tags>
+                    </to>
+                    <container>
+                        <mainClass>com.provectus.JmxMetrics</mainClass>
+                    </container>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <!-- attached to Maven test phase -->
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.cloud.tools</groupId>
+                        <artifactId>jib-maven-plugin</artifactId>
+                        <version>1.4.0</version>
+                        <executions>
+                            <execution>
+                                <id>build-image</id>
+                                <phase>package</phase>
+                                <goals><goal>build</goal></goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
