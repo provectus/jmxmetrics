@@ -60,7 +60,7 @@ jobs:
             MIN_VERSION=$(echo "$NEW_VERSION" | cut -d '.' -f 2)
             NEW_MINOR=$(($MIN_VERSION + 1))
             DEV_VERSION="$MAJ_VERSION.$NEW_MINOR-SNAPSHOT"
-	    git checkout master
+            git checkout master
             git pull origin master
             mvn -q -s .circleci/settings.xml versions:set -DnewVersion="$DEV_VERSION"
             git add pom.xml
