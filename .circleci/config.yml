@@ -72,7 +72,9 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - bash <(curl -s https://codecov.io/bash)
+      - run:
+          name: Upload coverage
+          command: bash <(curl -s https://codecov.io/bash)
 
 workflows:
   version: 2
