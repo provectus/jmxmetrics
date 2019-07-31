@@ -2,7 +2,7 @@ version: 2
 
 defaults: &defaults
   docker:
-    - image: maven:3-jdk-12
+    - image: maven:3-jdk-12-alpine
       entrypoint: /bin/sh
   working_directory: ~/repo
   environment:
@@ -37,7 +37,7 @@ jobs:
       - run:
           name: Release
           command: |
-            yum install -y git
+            apk add git
             OLD_VERSION=$(mvn -s .circleci/settings.xml -q \
               -Dexec.executable="echo" -Dexec.args='${project.version}' \
               --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec)
@@ -56,8 +56,20 @@ jobs:
             git tag "$NEW_VERSION"
             git push --tags
             git push origin release
-            MAJ_VERSION=$(echo "$NEW_VERSION" | cut -d '.' -f 1)
-            MIN_VERSION=$(echo "$NEW_VERSION" | cut -d '.' -f 2)
+      - persist_to_workspace:
+          root: .
+          paths: .
+
+  post-release:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Release
+          command: |
+            apk add git
+            MAJ_VERSION=$(echo "$CIRCLE_TAG" | cut -d '.' -f 1)
+            MIN_VERSION=$(echo "$CIRCLE_TAG" | cut -d '.' -f 2)
             NEW_MINOR=$(($MIN_VERSION + 1))
             DEV_VERSION="$MAJ_VERSION.$NEW_MINOR-SNAPSHOT"
             git checkout master
@@ -74,7 +86,29 @@ jobs:
           at: .
       - run:
           name: Upload coverage
-          command: bash <(curl -s https://codecov.io/bash)
+          command: |
+            apk --no-cache add findutils git bash curl
+            curl -s https://codecov.io/bash > .codecov
+            chmod +x .codecov
+            ./.codecov
+
+  image:
+    docker:
+      - image: docker:stable
+        entrypoint: /bin/sh
+    working_directory: ~/repo
+    steps:
+      - setup_remote_docker
+      - checkout
+      - run:
+          name: Build image
+          command: |
+            echo "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USERNAME --password-stdin
+            cd docker
+            docker build -t provectuslabs/jmxmetrics .
+            docker tag provectuslabs/jmxmetrics:latest provectuslabs/jmxmetrics:${CIRCLE_TAG:$CIRCLE_SHA1}
+            docker push provectuslabs/jmxmetrics
+            docker push  provectuslabs/jmxmetrics:${CIRCLE_TAG:$CIRCLE_SHA1}
 
 workflows:
   version: 2
@@ -89,6 +123,22 @@ workflows:
           filters:
             branches:
               only: /^release$/
+      - post-release:
+          context: Public
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+      - image:
+          context: Public
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+          requires:
+            - build
       - codecov:
           requires:
             - build
