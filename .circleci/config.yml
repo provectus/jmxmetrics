@@ -54,7 +54,7 @@ jobs:
             git add pom.xml
             git commit -m "release: $NEW_VERSION [skip ci]"
             git tag "$NEW_VERSION"
-            git push --tags
+            git push --tags origin release
             git push origin release
       - persist_to_workspace:
           root: .
@@ -72,6 +72,11 @@ jobs:
             MIN_VERSION=$(echo "$CIRCLE_TAG" | cut -d '.' -f 2)
             NEW_MINOR=$(($MIN_VERSION + 1))
             DEV_VERSION="$MAJ_VERSION.$NEW_MINOR-SNAPSHOT"
+            git config user.name "${GITHUB_BOT_NAME}"
+            git config user.email "${GITHUB_BOT_EMAIL}"
+            git remote rm origin
+            git remote add origin https://${GITHUB_BOT_NAME}:${GITHUB_BOT_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git
+            git fetch --all
             git checkout master
             git pull origin master
             mvn -q -s .circleci/settings.xml versions:set -DnewVersion="$DEV_VERSION"
