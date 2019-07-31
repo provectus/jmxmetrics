@@ -5,11 +5,10 @@
 
     <groupId>com.provectus</groupId>
     <artifactId>jmxmetrics</artifactId>
-
     <version>1.5-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>com.provectus jmxmetrics</name>
+    <name>com.provectus.jmxmetrics</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

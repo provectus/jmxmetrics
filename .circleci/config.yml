@@ -123,6 +123,9 @@ workflows:
     jobs:
       - build:
           context: Public
+          filters:
+            tags:
+              only: /.*/
       - release:
           context: Public
           requires:
