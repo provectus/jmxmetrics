@@ -54,8 +54,8 @@ jobs:
             mvn -q -s .circleci/settings.xml versions:set -DnewVersion="$NEW_VERSION"
             mvn -q -s .circleci/settings.xml deploy -Prelease -DaltDeploymentRepository=release::default::${CI_ARTIFACTORY_URL}/libs-release
             git add pom.xml
-            git tag "$NEW_VERSION"
             git commit -m "release: $NEW_VERSION [skip ci]"
+            git tag "$NEW_VERSION"
             git push --tags origin release
             git push origin release
       - persist_to_workspace:
