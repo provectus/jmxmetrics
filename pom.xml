@@ -5,7 +5,7 @@
 
     <groupId>com.provectus</groupId>
     <artifactId>jmxmetrics</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.5</version>
     <packaging>jar</packaging>
 
     <name>com.provectus.jmxmetrics</name>
