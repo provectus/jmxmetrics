@@ -26,9 +26,10 @@ hs_err_pid*
 .DS_Store
 
 .idea/
+.vscode/
 target/
 *.iml
 
 .classpath
-.project`
+.project
 .settings
