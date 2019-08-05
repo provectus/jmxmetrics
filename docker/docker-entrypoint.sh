@@ -29,7 +29,7 @@ chown -R jmxmetrics "$JMXMETRICS_HOME"
 CONFIG="-Dconfig.file=$CONF_DIR/application.conf"
 EXEC="-jar $JAR_FILE $ADDITIONAL_JARS_OPTS"
 GC_OPTS="-Xms${HEAP_SIZE}m -Xmx${HEAP_SIZE}m"
-JMXMETRICSOPTS="$JMXMETRICS_OPTS -Dlogback.configurationFile=file:///${JMXMETRICS_HOME}/conf/logback.xml $CONFIG"
+JMXMETRICS_OPTS="$JMXMETRICS_OPTS -Dlogback.configurationFile=file:///${JMXMETRICS_HOME}/conf/logback.xml $CONFIG"
 
 MONITOR_OPTS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.ssl=false \
               -Dcom.sun.management.jmxremote.authenticate=false \
